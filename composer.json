@@ -1,0 +1,19 @@
+{
+    "name": "ramphor/embrati",
+    "description": "Embed rating",
+    "type": "library",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Ramphor Premium",
+            "email": "puleeno@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Embrati\\": "./src/"
+        }
+    }
+}
