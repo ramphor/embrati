@@ -58,6 +58,18 @@ class Embrati
         static::$options['scripts_registered'] = true;
     }
 
+    public function registerStyles() {
+        wp_register_style(
+            'css-star-rating',
+            $this->assetUrl('css-star-rating/css/star-rating.css'),
+            array(),
+            '1.1.3'
+        );
+
+        // Call the style just registered
+        wp_enqueue_style('css-star-rating');
+    }
+
     protected function assetUrl($path = '')
     {
         if (is_null(static::$assetUrl)) {
@@ -102,6 +114,10 @@ class Embrati
         echo '</script>';
     }
 
+    /**
+     * This method use to create star rating support interaction via WordPress ajax.
+     * It's will render HTML and use JS to render the star
+     */
     public function create($id, $args)
     {
         if (isset(static::$ratings[$id])) {
@@ -117,5 +133,12 @@ class Embrati
             return $html;
         }
         echo $html;
+    }
+
+    /**
+     * This method use to show star rating only.
+     * It's will render HTML and use CSS to styling the star
+     */
+    public function display($id, $args) {
     }
 }
