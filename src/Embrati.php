@@ -135,10 +135,64 @@ class Embrati
         echo $html;
     }
 
+    protected function generateHtmlAttributes($attributes)
+    {
+        if (!is_array($attributes)) {
+            return '';
+        }
+        $attributesStr = '';
+        foreach ($attributes as $attribute => $value) {
+            $attributesStr .= sprintf(
+                '%s="%s" ',
+                $attribute,
+                is_array($value) ? implode(' ', $value) : $value
+            );
+        }
+        return rtrim($attributesStr);
+    }
+
     /**
      * This method use to show star rating only.
      * It's will render HTML and use CSS to styling the star
      */
     public function display($id, $args) {
+        $cssClasses = array('rating', 'medium', 'half', 'star-icon', 'value-3', 'hover-2');
+        if (isset($args['wrap_class'])) {
+            $cssClasses = array_merge($cssClasses, $args['wrap_class']);
+        }
+        $attributes = array(
+            'class' => $cssClasses,
+        );
+        ?>
+        <div <?php echo $this->generateHtmlAttributes($attributes); ?>>
+            <div class="star-container">
+                <div class="star">
+                    <i class="star-empty"></i>
+                    <i class="star-half"></i>
+                    <i class="star-filled"></i>
+                </div>
+                <div class="star">
+                    <i class="star-empty"></i>
+                    <i class="star-half"></i>
+                    <i class="star-filled"></i>
+                </div>
+                <div class="star">
+                    <i class="star-empty"></i>
+                    <i class="star-half"></i>
+                    <i class="star-filled"></i>
+                </div>
+                <div class="star">
+                    <i class="star-empty"></i>
+                    <i class="star-half"></i>
+                    <i class="star-filled"></i>
+                </div>
+                <div class="star">
+                    <i class="star-empty"></i>
+                    <i class="star-half"></i>
+                    <i class="star-filled"></i>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 }
