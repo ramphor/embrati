@@ -151,6 +151,16 @@ class Embrati
         return rtrim($attributesStr);
     }
 
+    protected function renderStars() {
+        ?>
+        <div class="star">
+                <i class="star-empty"></i>
+            <i class="star-half"></i>
+            <i class="star-filled"></i>
+        </div>
+        <?php
+    }
+
     /**
      * This method use to show star rating only.
      * It's will render HTML and use CSS to styling the star
@@ -166,31 +176,7 @@ class Embrati
         ?>
         <div <?php echo $this->generateHtmlAttributes($attributes); ?>>
             <div class="star-container">
-                <div class="star">
-                    <i class="star-empty"></i>
-                    <i class="star-half"></i>
-                    <i class="star-filled"></i>
-                </div>
-                <div class="star">
-                    <i class="star-empty"></i>
-                    <i class="star-half"></i>
-                    <i class="star-filled"></i>
-                </div>
-                <div class="star">
-                    <i class="star-empty"></i>
-                    <i class="star-half"></i>
-                    <i class="star-filled"></i>
-                </div>
-                <div class="star">
-                    <i class="star-empty"></i>
-                    <i class="star-half"></i>
-                    <i class="star-filled"></i>
-                </div>
-                <div class="star">
-                    <i class="star-empty"></i>
-                    <i class="star-half"></i>
-                    <i class="star-filled"></i>
-                </div>
+                <?php $this->renderStars(); ?>
             </div>
         </div>
         <?php
