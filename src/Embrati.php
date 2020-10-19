@@ -73,8 +73,15 @@ class Embrati
     protected function assetUrl($path = '')
     {
         if (is_null(static::$assetUrl)) {
-            static::$assetUrl = str_replace(ABSPATH, site_url('/'), EMBRATI_ABSPATH);
+            $abspath = constant('ABSPATH');
+            $embratiAbspath = constant('EMBRATI_ABSPATH');
+            if (PHP_OS === 'WINNT') {
+                $abspath = str_replace('\\', '', $abspath);
+                $embratiAbspath = str_replace('\\', '', $embratiAbspath);
+            }
+            static::$assetUrl = str_replace($abspath, site_url('/'), $embratiAbspath);
         }
+
         return sprintf(
             '%s/assets/%s',
             static::$assetUrl,
