@@ -76,8 +76,8 @@ class Embrati
             $abspath = constant('ABSPATH');
             $embratiAbspath = constant('EMBRATI_ABSPATH');
             if (PHP_OS === 'WINNT') {
-                $abspath = str_replace('\\', '', $abspath);
-                $embratiAbspath = str_replace('\\', '', $embratiAbspath);
+                $abspath = str_replace('\\', '/', $abspath);
+                $embratiAbspath = str_replace('\\', '/', $embratiAbspath);
             }
             static::$assetUrl = str_replace($abspath, site_url('/'), $embratiAbspath);
         }
