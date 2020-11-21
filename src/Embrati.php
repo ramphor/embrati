@@ -10,6 +10,7 @@ class Embrati
         'scripts_registered' => false,
     );
     protected static $ratings = array();
+    protected $rateCallback;
 
     public static function getInstance()
     {
@@ -58,7 +59,8 @@ class Embrati
         static::$options['scripts_registered'] = true;
     }
 
-    public function registerStyles() {
+    public function registerStyles()
+    {
         wp_register_style(
             'css-star-rating',
             $this->assetUrl('css-star-rating/css/star-rating.css'),
@@ -92,12 +94,17 @@ class Embrati
     public function _registerScripts()
     {
         wp_register_script('embrati', $this->assetUrl('rater-js.js'), null, '1.0.1', true);
-        wp_enqueue_script('embrati');
+        do_action('embrati_registered_scripts');
+
+        wp_enqueue_script(apply_filters('embrati_enqueue_script', 'embrati'));
     }
 
     public function transformConfigurations($id, $options)
     {
         $output = sprintf('element: document.querySelector("#embrati-%s"),%s', $id, PHP_EOL);
+        if ($this->rateCallback) {
+            $options['rateCallback'] = $this->rateCallback;
+        }
         foreach ($options as $option => $value) {
             switch ($option) {
                 default:
@@ -158,7 +165,8 @@ class Embrati
         return rtrim($attributesStr);
     }
 
-    protected function renderStars() {
+    protected function renderStars()
+    {
         ?>
         <div class="star">
                 <i class="star-empty"></i>
@@ -172,7 +180,8 @@ class Embrati
      * This method use to show star rating only.
      * It's will render HTML and use CSS to styling the star
      */
-    public function display($id, $args) {
+    public function display($id, $args)
+    {
         $cssClasses = array('rating', 'medium', 'half', 'star-icon', 'value-3', 'hover-2');
         if (isset($args['wrap_class'])) {
             $cssClasses = array_merge($cssClasses, $args['wrap_class']);
@@ -187,5 +196,13 @@ class Embrati
             </div>
         </div>
         <?php
+    }
+
+    public function setJsRateCallback($rateCallback)
+    {
+        if (empty($rateCallback)) {
+            return;
+        }
+        $this->rateCallback = $rateCallback;
     }
 }
