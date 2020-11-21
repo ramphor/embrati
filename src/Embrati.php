@@ -10,6 +10,7 @@ class Embrati
         'scripts_registered' => false,
     );
     protected static $ratings = array();
+    protected $rateCallback;
 
     public static function getInstance()
     {
@@ -58,7 +59,8 @@ class Embrati
         static::$options['scripts_registered'] = true;
     }
 
-    public function registerStyles() {
+    public function registerStyles()
+    {
         wp_register_style(
             'css-star-rating',
             $this->assetUrl('css-star-rating/css/star-rating.css'),
@@ -92,12 +94,17 @@ class Embrati
     public function _registerScripts()
     {
         wp_register_script('embrati', $this->assetUrl('rater-js.js'), null, '1.0.1', true);
-        wp_enqueue_script('embrati');
+        do_action('embrati_registered_scripts');
+
+        wp_enqueue_script(apply_filters('embrati_enqueue_script', 'embrati'));
     }
 
     public function transformConfigurations($id, $options)
     {
         $output = sprintf('element: document.querySelector("#embrati-%s"),%s', $id, PHP_EOL);
+        if ($this->rateCallback) {
+            $options['rateCallback'] = $this->rateCallback;
+        }
         foreach ($options as $option => $value) {
             switch ($option) {
                 default:
@@ -116,7 +123,7 @@ class Embrati
         }
         echo '<script>';
         foreach (static::$ratings as $id => $configurations) {
-            echo sprintf('raterJs({%2$s%1$s%2$s});%2$s', $this->transformConfigurations($id, $configurations), PHP_EOL) ;
+            echo sprintf('var ' . preg_replace('/[-]/', '_', $id) . ' = raterJs({%2$s%1$s%2$s});%2$s', $this->transformConfigurations($id, $configurations), PHP_EOL) ;
         }
         echo '</script>';
     }
@@ -158,34 +165,71 @@ class Embrati
         return rtrim($attributesStr);
     }
 
-    protected function renderStars() {
-        ?>
-        <div class="star">
-                <i class="star-empty"></i>
-            <i class="star-half"></i>
-            <i class="star-filled"></i>
-        </div>
-        <?php
-    }
-
     /**
      * This method use to show star rating only.
      * It's will render HTML and use CSS to styling the star
      */
-    public function display($id, $args) {
-        $cssClasses = array('rating', 'medium', 'half', 'star-icon', 'value-3', 'hover-2');
+    public function display($id, $args)
+    {
+        $cssClasses = array('rating', 'medium');
+        $args = wp_parse_args($args, array(
+            'max' => 5,
+            'use_svg' => true,
+            'rating' => 0
+        ));
+        $ratingValue = floor($args['rating']);
+
         if (isset($args['wrap_class'])) {
             $cssClasses = array_merge($cssClasses, $args['wrap_class']);
         }
+        if ($args['use_svg']) {
+            $cssClasses[] = 'svg';
+        }
+
+        if ($args['rating'] > 0) {
+            $cssClasses[] = sprintf('value-%d', $ratingValue);
+        }
+        if ($args['rating'] - $ratingValue > 0) {
+            $cssClasses[] = 'half';
+        }
+
         $attributes = array(
             'class' => $cssClasses,
         );
+
+        $starTemplate = locate_template(apply_filters("embrati_{$id}_templates", array(
+            'templates/embrati/star.php',
+            'templates/star.php',
+        )));
+        if (empty($starTemplate)) {
+            $starTemplate = sprintf('%s/templates/star.php', dirname(__DIR__));
+            $svgStar = $this->assetUrl('star-rating.icons.svg');
+        }
         ?>
-        <div <?php echo $this->generateHtmlAttributes($attributes); ?>>
+        <div <?php echo $this->generateHtmlAttributes(apply_filters(
+            "embrati_{$id}_star_wrapper_attributes",
+            $attributes
+        )); ?>>
             <div class="star-container">
-                <?php $this->renderStars(); ?>
+                <?php
+                ob_start();
+                include $starTemplate;
+                $starHTML = str_repeat(
+                    ob_get_clean(),
+                    $args['max']
+                );
+                echo $starHTML;
+                ?>
             </div>
         </div>
         <?php
+    }
+
+    public function setJsRateCallback($rateCallback)
+    {
+        if (empty($rateCallback)) {
+            return;
+        }
+        $this->rateCallback = $rateCallback;
     }
 }
