@@ -165,34 +165,61 @@ class Embrati
         return rtrim($attributesStr);
     }
 
-    protected function renderStars()
-    {
-        ?>
-        <div class="star">
-                <i class="star-empty"></i>
-            <i class="star-half"></i>
-            <i class="star-filled"></i>
-        </div>
-        <?php
-    }
-
     /**
      * This method use to show star rating only.
      * It's will render HTML and use CSS to styling the star
      */
     public function display($id, $args)
     {
-        $cssClasses = array('rating', 'medium', 'half', 'star-icon', 'value-3', 'hover-2');
+        $cssClasses = array('rating', 'medium');
+        $args = wp_parse_args($args, array(
+            'max' => 5,
+            'use_svg' => true,
+            'rating' => 0
+        ));
+        $ratingValue = floor($args['rating']);
+
         if (isset($args['wrap_class'])) {
             $cssClasses = array_merge($cssClasses, $args['wrap_class']);
         }
+        if ($args['use_svg']) {
+            $cssClasses[] = 'svg';
+        }
+
+        if ($args['rating'] > 0) {
+            $cssClasses[] = sprintf('value-%d', $ratingValue);
+        }
+        if ($args['rating'] - $ratingValue > 0) {
+            $cssClasses[] = 'half';
+        }
+
         $attributes = array(
             'class' => $cssClasses,
         );
+
+        $starTemplate = locate_template(apply_filters("embrati_{$id}_templates", array(
+            'templates/embrati/star.php',
+            'templates/star.php',
+        )));
+        if (empty($starTemplate)) {
+            $starTemplate = sprintf('%s/templates/star.php', dirname(__DIR__));
+            $svgStar = $this->assetUrl('star-rating.icons.svg');
+        }
         ?>
-        <div <?php echo $this->generateHtmlAttributes($attributes); ?>>
+        <div <?php echo $this->generateHtmlAttributes(apply_filters(
+            "embrati_{$id}_star_wrapper_attributes",
+            $attributes
+        )); ?>>
             <div class="star-container">
-                <?php $this->renderStars(); ?>
+                <?php
+                ob_start();
+                include $starTemplate;
+                $starHTML = str_repeat(
+                    ob_get_clean(),
+                    $args['max']
+                );
+                echo $starHTML;
+                ?>
             </div>
         </div>
         <?php
