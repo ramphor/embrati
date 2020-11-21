@@ -123,7 +123,7 @@ class Embrati
         }
         echo '<script>';
         foreach (static::$ratings as $id => $configurations) {
-            echo sprintf('raterJs({%2$s%1$s%2$s});%2$s', $this->transformConfigurations($id, $configurations), PHP_EOL) ;
+            echo sprintf('var ' . preg_replace('/[-]/', '_', $id) . ' = raterJs({%2$s%1$s%2$s});%2$s', $this->transformConfigurations($id, $configurations), PHP_EOL) ;
         }
         echo '</script>';
     }
