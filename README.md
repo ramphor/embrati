@@ -37,6 +37,7 @@ $embrati->create('rating_id', $options);
 ## Display rating only
 
 You need show star rating only please call below method
+This feature use css-star-rating to show stars. You can check documnent at here: https://github.com/BioPhoton/css-star-rating
 
 ```
 $options = array(
