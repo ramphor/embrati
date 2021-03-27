@@ -45,5 +45,5 @@ $options = array(
   'use_svg' => true,
   'rating' => 2.5 // This is rating value to show stars
 );
-$embrati->display($id, $options);
+$embrati->display('rating_id', $options);
 ```
