@@ -28,8 +28,9 @@ $embrati->registerAdminScripts();
 
 ## Create rating UI
 
+The options is RaterJS options. You can see list options at here: https://auxiliary.github.io/rater/
+
 ```
-// The options is RaterJS options. You can see list options at here: https://auxiliary.github.io/rater/
 $options = array();
 $embrati->create('rating_id', $options);
 ```
