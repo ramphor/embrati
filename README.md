@@ -33,3 +33,16 @@ $embrati->registerAdminScripts();
 $options = array();
 $embrati->create('rating_id', $options);
 ```
+
+## Display rating only
+
+You need show star rating only please call below method
+
+```
+$options = array(
+  'max' => 5,
+  'use_svg' => true,
+  'rating' => 2.5 // This is rating value to show stars
+);
+$embrati->display($id, $options);
+```
